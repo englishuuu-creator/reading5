@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="문장학습">
+<meta name="theme-color" content="#58a700">
+<title>Lesson 5 문장 학습</title>
+<style>
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{
+    --bg:#f7f8fc; --card:#fff; --ink:#2b2f3a; --sub:#6b7280;
+    --brand:#58a700; --brand-d:#4a8a00; --brandbg:#e9f7d3;
+    --blue:#1cb0f6; --blue-d:#1799d6; --line:#e5e7eb;
+    --wrong:#ea2b2b; --wrongbg:#fdeaea; --gold:#ffb700;
+    --tileline:#d6dae2;
+  }
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:'Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,sans-serif;
+    -webkit-text-size-adjust:100%;}
+  body{overscroll-behavior:none;}
+  .wrap{max-width:560px;margin:0 auto;min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);}
+
+  /* ---------- HOME ---------- */
+  .home{flex:1;display:flex;flex-direction:column;justify-content:center;padding:26px 20px;}
+  .home h1{font-size:26px;margin:0 0 6px;font-weight:800;}
+  .home .sub{color:var(--sub);margin:0 0 24px;font-size:15px;line-height:1.5;}
+  .pcard{background:var(--card);border:2px solid var(--line);border-radius:18px;
+    padding:18px;margin-bottom:14px;cursor:pointer;transition:.15s;display:flex;
+    align-items:center;gap:14px;}
+  .pcard:active{border-color:var(--brand);transform:scale(.99);}
+  .pcard .emoji{font-size:32px;}
+  .pcard .t{font-weight:800;font-size:17px;}
+  .pcard .d{color:var(--sub);font-size:13px;margin-top:3px;}
+  .pcard .n{margin-left:auto;background:var(--brandbg);color:var(--brand-d);
+    font-weight:700;border-radius:20px;padding:6px 11px;font-size:12px;white-space:nowrap;}
+  .best{margin-left:6px;font-size:11px;color:var(--gold);font-weight:800;white-space:nowrap;}
+  .tip{margin-top:16px;background:#fff8e6;border:1px solid #ffe6a1;border-radius:14px;
+    padding:13px 15px;font-size:12.5px;color:#7a5a00;line-height:1.55;}
+  .soundtest{width:100%;margin-top:8px;border:none;border-radius:16px;padding:15px;
+    font-size:16px;font-weight:800;cursor:pointer;background:var(--blue);color:#fff;
+    box-shadow:0 4px 0 var(--blue-d);}
+  .soundtest:active{transform:translateY(3px);box-shadow:0 1px 0 var(--blue-d);}
+  .teststatus{text-align:center;font-size:13px;font-weight:700;color:var(--sub);margin-top:10px;min-height:18px;}
+  .sndstat{font-size:11.5px;color:var(--sub);font-weight:700;margin-bottom:6px;min-height:15px;}
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{display:flex;align-items:center;gap:10px;padding:12px 14px;}
+  .iconbtn{background:none;border:none;font-size:22px;color:var(--sub);cursor:pointer;padding:4px;}
+  .progress{flex:1;height:14px;background:#e6e8ee;border-radius:10px;overflow:hidden;}
+  .progress>i{display:block;height:100%;width:0;background:var(--brand);border-radius:10px;transition:width .3s;}
+  .scorechip{display:flex;align-items:center;gap:4px;background:#fff;border:2px solid var(--line);
+    border-radius:20px;padding:4px 11px;font-weight:800;font-size:14px;color:var(--gold);}
+  .scorechip.pop{animation:pop .35s;}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.28)}100%{transform:scale(1)}}
+  .combo{font-size:11px;color:var(--brand-d);font-weight:800;margin-left:2px;}
+
+  /* ---------- LESSON ---------- */
+  .lesson{flex:1;display:flex;flex-direction:column;padding:2px 16px 0;}
+  .sectionTitle{background:var(--brandbg);color:var(--brand-d);border-radius:12px;
+    padding:8px 12px;font-weight:800;font-size:13px;margin:4px 0 12px;text-align:center;}
+  .prompt{color:var(--sub);font-weight:700;font-size:13.5px;margin-bottom:12px;}
+  .hint{background:#eef7ff;border:1px solid #cfeaff;color:#2b6b93;border-radius:10px;
+    padding:8px 11px;font-size:11.5px;line-height:1.45;margin-bottom:14px;}
+  .listenRow{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .speaker{width:60px;height:60px;border-radius:16px;border:none;cursor:pointer;
+    background:var(--blue);color:#fff;font-size:26px;display:flex;align-items:center;
+    justify-content:center;box-shadow:0 3px 0 var(--blue-d);flex-shrink:0;}
+  .speaker:active{transform:translateY(2px);box-shadow:0 1px 0 var(--blue-d);}
+  .speaker.slow{width:46px;height:46px;font-size:18px;background:#fff;color:var(--blue);
+    border:2px solid var(--blue);box-shadow:0 3px 0 #d7eefb;}
+  .eng{font-size:18px;line-height:1.45;font-weight:600;flex:1;}
+
+  .answer{min-height:58px;border-top:2px solid var(--line);border-bottom:2px solid var(--line);
+    padding:11px 2px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;margin-bottom:18px;}
+  .bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:12px;}
+  .tile{background:#fff;border:2px solid var(--tileline);border-bottom-width:4px;border-radius:12px;
+    padding:10px 13px;font-size:16px;font-weight:600;cursor:pointer;color:var(--ink);
+    transition:transform .06s;user-select:none;}
+  .tile:active{transform:translateY(1px);}
+  .tile.used{background:#eef0f4;border-color:#eef0f4;color:#eef0f4;pointer-events:none;}
+
+  .feedback{padding:15px 16px;border-radius:16px 16px 0 0;margin-top:auto;display:none;}
+  .feedback .ft{font-weight:800;font-size:16px;margin-bottom:4px;}
+  .feedback .fa{font-size:14.5px;line-height:1.5;}
+  .feedback .pts{font-size:13px;font-weight:800;margin-top:5px;}
+  .feedback.ok{background:var(--brandbg);color:var(--brand-d);}
+  .feedback.no{background:var(--wrongbg);color:var(--wrong);}
+
+  .footer{padding:14px 16px calc(18px + env(safe-area-inset-bottom));}
+  .btn{width:100%;border:none;border-radius:16px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;transition:.1s;}
+  .btn.check{background:var(--brand);color:#fff;box-shadow:0 4px 0 var(--brand-d);}
+  .btn.check:disabled{background:#dfe2e8;color:#a5abb6;box-shadow:0 4px 0 #cfd3db;cursor:default;}
+  .btn.check:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 var(--brand-d);}
+  .btn.next{background:var(--brand);color:#fff;box-shadow:0 4px 0 var(--brand-d);}
+  .btn.retry{background:var(--wrong);color:#fff;box-shadow:0 4px 0 #b81f1f;}
+
+  /* ---------- DONE ---------- */
+  .done{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;}
+  .done .big{font-size:54px;margin-bottom:6px;}
+  .done .stars{font-size:34px;letter-spacing:4px;margin-bottom:12px;}
+  .done h2{margin:0 0 6px;font-size:23px;}
+  .done .grade{font-size:15px;color:var(--sub);margin:0 0 22px;}
+  .done .stat{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;justify-content:center;}
+  .done .stat div{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:13px 18px;min-width:88px;}
+  .done .stat b{display:block;font-size:22px;color:var(--brand);}
+  .done .stat.gold b{color:var(--gold);}
+  .done .stat span{font-size:11.5px;color:var(--sub);}
+  .newbest{color:var(--gold);font-weight:800;margin-bottom:16px;font-size:14px;}
+  .hide{display:none !important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home" class="home">
+    <h1>🎧 문장 학습</h1>
+    <p class="sub">Lesson 5 · The Team Behind the Team<br>
+      음성을 듣고 한국어 단어를 순서대로 조합해 해석을 완성하세요.</p>
+    <div class="pcard" data-p="0">
+      <span class="emoji">🏃</span>
+      <div><div class="t">Reading 1</div>
+        <div class="d">Hidden People in Sports / Pacers</div></div>
+      <span class="n">13문장</span><span class="best" id="best0"></span>
+    </div>
+    <div class="pcard" data-p="1">
+      <span class="emoji">🏎️</span>
+      <div><div class="t">Reading 2</div>
+        <div class="d">Pit Crews / Sherpas</div></div>
+      <span class="n">15문장</span><span class="best" id="best1"></span>
+    </div>
+    <button class="soundtest" id="soundTest">🔊 소리 테스트 — 먼저 눌러보세요</button>
+    <div class="teststatus" id="testStatus">위 버튼을 누르면 영어 음성이 나와야 정상입니다.</div>
+    <div class="tip">📱 <b>아이폰</b>: 소리가 안 나면 측면 <b>무음(진동) 스위치를 끄고</b> 볼륨을 올리세요. 사파리에서 공유 <b>→ 홈 화면에 추가</b>를 하면 앱처럼 전체화면으로 실행됩니다.</div>
+  </section>
+
+  <!-- LESSON -->
+  <section id="lesson" class="hide" style="flex:1;display:flex;flex-direction:column;">
+    <div class="topbar">
+      <button class="iconbtn" id="quit">✕</button>
+      <div class="progress"><i id="bar"></i></div>
+      <div class="scorechip" id="scorechip">⭐<span id="scoreVal">0</span><span class="combo" id="combo"></span></div>
+    </div>
+    <div class="lesson">
+      <div id="sectionTitle" class="sectionTitle hide"></div>
+      <div class="prompt" id="prompt">🔊 음성을 듣고, 아래 단어로 해석을 완성하세요</div>
+      <div class="listenRow">
+        <button class="speaker" id="play" title="다시 듣기">🔊</button>
+        <button class="speaker slow" id="playSlow" title="천천히 듣기">🐢</button>
+        <div class="eng" id="eng"></div>
+      </div>
+      <div class="sndstat" id="sndStat"></div>
+      <div class="hint" id="hint">🔈 소리가 안 들리면 아이폰 측면 <b>무음 스위치</b>를 끄고 볼륨을 올린 뒤 🔊를 누르세요</div>
+      <div class="answer" id="answer"></div>
+      <div class="bank" id="bank"></div>
+      <div class="feedback" id="feedback">
+        <div class="ft" id="ft"></div>
+        <div class="fa" id="fa"></div>
+        <div class="pts" id="pts"></div>
+      </div>
+    </div>
+    <div class="footer">
+      <button class="btn check" id="action" disabled>정답 확인</button>
+    </div>
+  </section>
+
+  <!-- DONE -->
+  <section id="done" class="hide done">
+    <div class="big">🎉</div>
+    <div class="stars" id="stars"></div>
+    <h2 id="doneName"></h2>
+    <div class="grade" id="gradeText"></div>
+    <div class="newbest hide" id="newbest">🏆 최고 점수 경신!</div>
+    <div class="stat">
+      <div class="gold"><b id="scoreN">0</b><span>점수</span></div>
+      <div><b id="accN">0%</b><span>정확도</span></div>
+      <div><b id="correctN">0</b><span>한 번에 정답</span></div>
+    </div>
+    <button class="btn next" id="again" style="max-width:260px;margin-bottom:12px;">다시 풀기</button>
+    <button class="btn" id="homeBtn" style="max-width:260px;background:#eef0f4;color:var(--ink);box-shadow:0 4px 0 #d9dce2;">지문 선택으로</button>
+  </section>
+
+</div>
+
+<script>
+/* ================= DATA ================= */
+const PASSAGES = [
+  { name:"Reading 1 · Hidden People in Sports", key:"r1",
+    sentences:[
+      {en:"In sports, only the players get a trophy or medal, but they don't win on their own.",
+       chunks:["스포츠에서,","오직","선수들만","트로피나 메달을","받지만,","그들은","그들 스스로","이기지 않는다"]},
+      {en:"There are people who help the players.",
+       chunks:["그 선수들을","돕는","사람들이","있다"]},
+      {en:"These people are often hidden and don't get attention.",
+       chunks:["이 사람들은","종종","숨겨져 있고","주목을","받지 않는다"]},
+      {en:"However, they are as important as the players. Here are some examples.",
+       chunks:["하지만,","그들은","선수들만큼","중요하다.","여기","몇 개의 예시들이","있다"]},
+      {title:"Pacers in a Marathon · 마라톤에서의 페이서",
+       en:"Pacers run with other runners and lead them in a marathon.",
+       chunks:["페이서들은","다른 달리기 선수들과 함께","달리고,","마라톤에서","그들을","이끈다"]},
+      {en:"Pacers are experienced runners, and their job is to help other runners manage their race better.",
+       chunks:["페이서들은","경험이 많은","달리기 선수들이고,","그들의 역할은","다른 선수들이","그들의 경기를","더 잘 운영하도록","돕는 것이다"]},
+      {en:"There can be several pacers in a race.",
+       chunks:["한 경기에","여러 명의","페이서들이","있을 수 있다"]},
+      {en:"Each pacer runs at different speeds and finishes the race in different times.",
+       chunks:["각각의 페이서는","다른 속도로","달리고,","다른 시간대에","경기를","완주한다"]},
+      {en:"Pacers usually have flags or balloons showing their finish time.",
+       chunks:["페이서들은","주로","그들의 완주 시간을","보여주는","깃발이나 풍선들을","가지고 있다"]},
+      {en:"Runners can choose a pacer depending on their target finish time.",
+       chunks:["달리기 선수들은","그들의 목표 완주 시간에 따라","페이서를","선택할 수 있다"]},
+      {en:"For example, if a runner wants to finish the race in four hours, the runner will follow the four-hour pacer.",
+       chunks:["예를 들어,","만약 한 선수가","경기를","4시간 안에","완주하고 싶으면,","그 선수는","4시간 페이서를","따라갈 것이다"]},
+      {en:"Since the pacer keeps track of the time, the runner can achieve his or her goal of finishing the marathon in a particular time more easily.",
+       chunks:["페이서가","시간을","파악하기 때문에,","선수는","특정한 시간 안에","마라톤을 완주하려는","자신의 목표를","더 쉽게","달성할 수 있다"]},
+      {en:"In short, pacers run but they don't run to win. They run for others.",
+       chunks:["요약하면,","페이서들은","달리지만","그들은","이기기 위해서","달리지 않는다.","그들은","다른 사람들을 위해","달린다"]},
+    ]},
+  { name:"Reading 2 · Pit Crews / Sherpas", key:"r2",
+    sentences:[
+      {title:"Pit Crews in Car Racing · 자동차 경주에서의 피트 크루",
+       en:"You may only see the car and the driver during most car races, but there is a team behind the driver.",
+       chunks:["여러분은","대부분의 자동차 경주에서","자동차와 운전자만","볼지도 모르지만,","그 레이서 뒤에는","팀이 있다"]},
+      {en:"This team is called a pit crew.",
+       chunks:["이 팀은","피트 크루라고","불린다"]},
+      {en:"A pit is a place on the side of the race track, and drivers stop there several times during a race.",
+       chunks:["피트란","경주 트랙의 옆쪽에 있는","공간으로,","운전자들은","경주 도중에","그곳에서","여러 번","정지한다"]},
+      {en:"The main job of the pit crew is to check the car and change the tires.",
+       chunks:["피트 크루의","주요 역할은","자동차를 점검하고","타이어를 교체하는 것이다"]},
+      {en:"Changing the tires is especially important because the tires wear out easily in a high speed race.",
+       chunks:["타이어를 교체하는 것은","특히 중요하다","왜냐하면","타이어들은","빠른 속도의 경주에서","쉽게","닳기 때문이다"]},
+      {en:"A pit stop can be as short as 2 seconds, and there are as many as 20 members on a crew.",
+       chunks:["피트에서의 정지는","2초만큼","짧을 수 있고,","한 팀에는","20명만큼 많은","구성원들이 있다"]},
+      {en:"Therefore, the pit crew has to work in perfect harmony.",
+       chunks:["따라서,","피트 크루는","완벽한 조화로","일해야 한다"]},
+      {en:"The driver may get all the attention, but as people say, \"Races are won in the pits.\"",
+       chunks:["운전자가","모든 주목을","받을지도 모르지만,","사람들이 이야기하듯,","“우승은","피트에서","이루어진다.”"]},
+      {title:"Sherpas in Mountain Climbing · 등반에서의 세르파",
+       en:"The word Sherpa comes from the Sherpa tribe, which lives in the eastern part of Nepal.",
+       chunks:["세르파라는 단어는","세르파족에서","유래되었고,","그들은","네팔의 동쪽 지역에","산다"]},
+      {en:"Sherpas have good climbing skills and know their way around the mountains well.",
+       chunks:["세르파들은","훌륭한 등반 능력을","가지고 있고,","산의 지리를","잘 안다"]},
+      {en:"They also have little difficulty breathing high up in the mountains.",
+       chunks:["그들은 또한","산 높은 곳에서","숨 쉬는데","어려움이","거의 없다"]},
+      {en:"Therefore, mountain climbers started to hire Sherpas to help them climb Mount Everest.",
+       chunks:["따라서,","등반가들은","그들이 에베레스트산을","오르는 것을 돕기 위해","세르파를","고용하기 시작했다"]},
+      {en:"Sherpas lead mountain climbers to the top of the mountain.",
+       chunks:["세르파들은","등반가들을","산 정상으로","이끈다"]},
+      {en:"They support climbers in many ways. For example, they put up tents and carry climbers' bags.",
+       chunks:["그들은","등반가들을","다양한 방법으로","지원한다.","예를 들어,","그들은","텐트를 치고","등반가들의 가방을","들어준다"]},
+      {en:"Sherpas are often called the invisible people of Mount Everest because people often see a picture of only the climbers at the top of the mountain.",
+       chunks:["세르파들은","종종","에베레스트산의 보이지 않는 사람들이라고","불린다","왜냐하면","사람들이","산 정상에서","등반가들만 있는 사진을","자주 보기 때문이다"]},
+    ]},
+];
+
+/* ================= STATE ================= */
+let P=0, idx=0, score=0, streak=0, firstCorrect=0, wrongThis=false;
+let placed=[], bankOrder=[], checked=false;
+const BEST={}; // in-memory best scores
+
+const $=id=>document.getElementById(id);
+const cur=()=>PASSAGES[P].sentences[idx];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+/* ============ AUDIO: browser voice, spoken synchronously in the tap ============ */
+const SS = window.speechSynthesis;
+const hasTTS = !!SS && typeof SpeechSynthesisUtterance!=='undefined';
+let enVoice=null;
+function voiceCount(){ return SS?SS.getVoices().length:0; }
+function pickVoice(){
+  if(!SS)return;
+  const vs=SS.getVoices();
+  enVoice=vs.find(v=>/en[-_]US/i.test(v.lang)&&/Samantha|Google US|Aria|female/i.test(v.name))
+    ||vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;
+}
+if(SS){pickVoice();SS.onvoiceschanged=pickVoice;}
+
+function setStatus(msg){
+  const a=$('testStatus'); if(a)a.textContent=msg;
+  const b=$('sndStat'); if(b)b.textContent=msg;
+}
+
+// IMPORTANT: call SS.speak() synchronously inside the user gesture (iOS requirement)
+function speakText(text, rate){
+  if(!hasTTS){ setStatus('✗ 이 브라우저는 음성을 지원하지 않습니다. 사파리/크롬에서 열어주세요.'); return; }
+  try{ if(SS.speaking||SS.pending) SS.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=rate; u.pitch=1; if(enVoice)u.voice=enVoice;
+  u.onstart=()=>setStatus('▶ 재생 중…');
+  u.onend  =()=>setStatus('✓ 재생 완료 (voices: '+voiceCount()+')');
+  u.onerror=e=>setStatus('✗ 오류: '+((e&&e.error)||'unknown')+' — 아이폰이면 무음 스위치 해제');
+  setStatus('재생 시도… (voices: '+voiceCount()+')');
+  try{ SS.speak(u); }catch(e){ setStatus('✗ 예외: '+e.message); }
+}
+function speak(rate){ speakText(cur().en, rate); }
+
+$('soundTest').onclick=()=>speakText('Hello! If you can hear this voice, the sound is working.', 0.95);
+$('play').onclick=()=>speak(0.95);
+$('playSlow').onclick=()=>speak(0.6);
+
+/* ================= NAV ================= */
+document.querySelectorAll('.pcard').forEach(c=>{
+  c.onclick=()=>{P=+c.dataset.p;idx=0;score=0;streak=0;firstCorrect=0;startLesson();};
+});
+$('quit').onclick=goHome;
+$('homeBtn').onclick=goHome;
+$('again').onclick=()=>{idx=0;score=0;streak=0;firstCorrect=0;startLesson();};
+
+function goHome(){
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+  $('lesson').classList.add('hide');$('done').classList.add('hide');
+  $('home').classList.remove('hide');
+  refreshBest();
+}
+function startLesson(){
+  $('home').classList.add('hide');$('done').classList.add('hide');
+  $('lesson').classList.remove('hide');
+  render();
+}
+function refreshBest(){
+  ['r1','r2'].forEach((k,i)=>{$('best'+i).textContent=BEST[k]!=null?('🏆'+BEST[k]):'';});
+}
+
+/* ================= RENDER ================= */
+function render(){
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+  checked=false;wrongThis=false;placed=[];
+  const s=cur(), total=PASSAGES[P].sentences.length;
+
+  $('bar').style.width=(idx/total*100)+'%';
+  $('scoreVal').textContent=score;
+  $('combo').textContent=streak>=2?('🔥'+streak):'';
+
+  if(s.title){$('sectionTitle').textContent="📖 "+s.title;$('sectionTitle').classList.remove('hide');}
+  else $('sectionTitle').classList.add('hide');
+
+  $('prompt').textContent="🔊 "+(idx+1)+" / "+total+"  ·  음성을 듣고 해석을 완성하세요";
+  $('eng').textContent=s.en;
+
+  bankOrder=shuffle(s.chunks.map((c,i)=>({c,i})));
+  renderAnswer();renderBank();
+
+  $('feedback').style.display='none';
+  const a=$('action');a.className='btn check';a.textContent='정답 확인';a.disabled=true;a.onclick=onCheck;
+
+  // auto-play (triggered inside the tap gesture; 🔊 button is always available)
+  speak(1.0);
+}
+function renderAnswer(){
+  const ans=$('answer');ans.innerHTML='';
+  placed.forEach((p,pi)=>{
+    const t=document.createElement('div');t.className='tile';t.textContent=p.c;
+    if(!checked)t.onclick=()=>{placed.splice(pi,1);renderAnswer();renderBank();updateAction();};
+    ans.appendChild(t);
+  });
+}
+function renderBank(){
+  const bank=$('bank');bank.innerHTML='';
+  bankOrder.forEach(b=>{
+    const used=placed.some(p=>p.bankIdx===b.i);
+    const t=document.createElement('div');t.className='tile'+(used?' used':'');t.textContent=b.c;
+    if(!used&&!checked)t.onclick=()=>{placed.push({c:b.c,bankIdx:b.i});renderAnswer();renderBank();updateAction();};
+    bank.appendChild(t);
+  });
+}
+function updateAction(){$('action').disabled=placed.length===0;}
+
+/* ================= CHECK / SCORE ================= */
+function onCheck(){
+  const s=cur();
+  const ok = placed.map(p=>p.c).join(' ')===s.chunks.join(' ');
+  checked=true;
+  let gained=0;
+
+  if(ok){
+    if(!wrongThis){ // first-try correct
+      firstCorrect++; streak++;
+      gained = 100 + Math.min(streak-1,5)*10; // combo bonus up to +50
+    }else{
+      streak=0; gained = 40; // correct after a miss
+    }
+    score += gained;
+  }else{
+    wrongThis=true; streak=0;
+  }
+
+  // header update
+  $('scoreVal').textContent=score;
+  $('combo').textContent=streak>=2?('🔥'+streak):'';
+  if(gained>0){const c=$('scorechip');c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop');}
+
+  const fb=$('feedback');fb.style.display='block';
+  fb.className='feedback '+(ok?'ok':'no');
+  $('ft').textContent=ok?'✅ 정답이에요!':'❌ 아쉬워요';
+  $('fa').innerHTML='정답: <b>'+s.chunks.join(' ')+'</b>';
+  $('pts').textContent = ok ? ('+'+gained+'점'+(streak>=2?('  🔥'+streak+' 콤보!'):'')) : '';
+
+  const total=PASSAGES[P].sentences.length, last=idx>=total-1;
+  const a=$('action');
+  if(ok){
+    a.className='btn next';a.textContent=last?'결과 보기':'다음 문장 →';a.onclick=next;
+  }else{
+    a.className='btn retry';a.textContent='다시 풀기';
+    a.onclick=()=>{
+      placed=[];checked=false;$('feedback').style.display='none';
+      bankOrder=shuffle(s.chunks.map((c,i)=>({c,i})));
+      renderAnswer();renderBank();
+      const b=$('action');b.className='btn check';b.textContent='정답 확인';b.disabled=true;b.onclick=onCheck;
+    };
+  }
+  a.disabled=false;
+  renderAnswer();renderBank();
+}
+
+function next(){
+  const total=PASSAGES[P].sentences.length;
+  if(idx>=total-1){finish();return;}
+  idx++;render();
+}
+function finish(){
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+  $('lesson').classList.add('hide');$('done').classList.remove('hide');
+  const total=PASSAGES[P].sentences.length;
+  const acc=Math.round(firstCorrect/total*100);
+  $('doneName').textContent=PASSAGES[P].name;
+  $('scoreN').textContent=score;
+  $('accN').textContent=acc+'%';
+  $('correctN').textContent=firstCorrect+' / '+total;
+
+  let stars, grade;
+  if(acc>=100){stars='⭐⭐⭐';grade='완벽해요! S등급';}
+  else if(acc>=80){stars='⭐⭐☆';grade='훌륭해요! A등급';}
+  else if(acc>=60){stars='⭐☆☆';grade='잘했어요! B등급';}
+  else{stars='☆☆☆';grade='조금 더 연습해요! C등급';}
+  $('stars').textContent=stars;$('gradeText').textContent=grade;
+
+  const key=PASSAGES[P].key;
+  const isBest = BEST[key]==null || score>BEST[key];
+  if(isBest)BEST[key]=score;
+  $('newbest').classList.toggle('hide',!isBest);
+}
+
+refreshBest();
+</script>
+</body>
+</html>
